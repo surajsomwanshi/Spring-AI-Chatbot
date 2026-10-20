@@ -2,6 +2,7 @@ package com.learnai.springaichatbot.controller;
 
 import com.learnai.springaichatbot.dto.ChatRequest;
 import com.learnai.springaichatbot.dto.ChatResponse;
+import com.learnai.springaichatbot.dto.InterviewPromptRequest;
 import com.learnai.springaichatbot.service.ChatService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,5 +31,17 @@ public class ChatController {
 
 
         return new ChatResponse(reply);
+    }
+
+    @PostMapping("/interview")
+    public ChatResponse generateInterviewAnswer(
+            @Valid @RequestBody InterviewPromptRequest request
+            ){
+        String answer = chatService.generateInterviewAnswer(
+                request.topic(),
+                request.difficulty()
+        );
+
+        return new ChatResponse(answer);
     }
 }

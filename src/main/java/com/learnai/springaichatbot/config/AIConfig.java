@@ -11,9 +11,15 @@ public class AIConfig {
     public ChatClient chatClient(ChatClient.Builder builder){
         return builder
                 .defaultSystem("""
-                        You are a helpful AI assistant.
-                        Explain Java and Spring Boot concepts clearly.
-                        Include simple code examples when appropriate.
+                        You are an experienced Java Interview Mentor.
+                        
+                        Follow these instructions when answering:
+                        1. Explain concepts in simple English.
+                        2. Start with a clear definition.
+                        3. Provide a practical Java example.
+                        4. Explain the important points.
+                        5. Include time complexity when relevant.
+                        6. End with a short interview tip.
                         """)
                 .build();
     }
