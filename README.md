@@ -1,6 +1,6 @@
 # Spring AI Chatbot using Spring Boot and Ollama
 
-A simple AI chatbot REST API built with **Java 21, Spring Boot, Spring AI, and Ollama**. This project demonstrates how to integrate a locally running Large Language Model (LLM) into a Java backend application and expose AI-powered responses through REST APIs.
+A beginner-friendly AI chatbot built using Java, Spring Boot, Spring AI, and Ollama. This project demonstrates how to integrate a locally running Large Language Model (LLM) into a REST API and progressively implement core Spring AI features.
 
 The goal of this project is to learn Spring AI fundamentals and gradually extend the application with features such as conversation history, prompt templates, Retrieval-Augmented Generation (RAG), and other AI capabilities.
 
@@ -10,16 +10,41 @@ This application accepts a user message through a REST API, sends the message to
 
 Unlike applications that rely on cloud-based AI APIs, this project uses Ollama to run the language model locally.
 
-### Key Features
+## ✨ Features
 
-- REST API integration using Spring Boot.
-- Local LLM integration using Ollama.
-- Spring AI `ChatClient` for interacting with the AI model.
-- Request and response DTOs for structured API communication.
-- Separation of concerns using controller and service layers.
-- Request validation using Jakarta Bean Validation.
-- Configurable AI model and generation settings.
-- No external cloud AI API key required for local inference.
+### 1. AI Chat REST API
+- Exposes a REST endpoint to interact with the AI model.
+- Accepts user messages through JSON requests.
+- Returns AI-generated responses in JSON format.
+
+### 2. System Prompt Configuration
+- Configures default AI behavior using Spring AI's `ChatClient`.
+- Provides a Java interview mentor persona.
+- Guides the model to explain concepts using definitions, practical Java examples, complexity analysis where relevant, and interview tips.
+
+### 3. Dynamic Interview Prompts
+- Uses Spring AI's `PromptTemplate` to create dynamic prompts.
+- Accepts a topic and difficulty level.
+- Generates structured, interview-oriented answers for Java concepts.
+
+### 4. Conversation Memory
+- Implements conversation history using Spring AI's `ChatMemory`.
+- Uses a conversation ID to associate messages with a specific conversation.
+- Allows the AI to use previous messages when answering follow-up questions.
+- Keeps different conversations logically separate using different conversation IDs.
+
+**Note:** The current in-memory implementation does not persist conversation history across application restarts.
+
+## 🔮 Future Enhancements
+
+- Add request validation and centralized exception handling.
+- Implement persistent conversation history using a database.
+- Add Retrieval-Augmented Generation (RAG) for document-based question answering.
+- Implement structured AI responses mapped to Java objects.
+- Explore AI tool calling.
+- Add unit and integration tests.
+- Dockerize the application.
+
 
 ## 🛠️ Technology Stack
 
@@ -97,7 +122,9 @@ spring-ai-chatbot/
 │   │   │       │   └── ChatService.java
 │   │   │       ├── dto/
 │   │   │       │   ├── ChatRequest.java
-│   │   │       │   └── ChatResponse.java
+                    ├── ChatResponse.java
+                    ├── InterviewPromptRequest.java
+                    └── ConversationChatRequest.java
 │   │   │       └── SpringAiChatbotApplication.java
 │   │   └── resources/
 │   │       └── application.properties
@@ -199,44 +226,54 @@ mvn spring-boot:run
 
 ## 🔌 API Documentation
 
-### Generate an AI Response
+#### 1. General Chat
 
-**Endpoint**
+**Endpoint:** `POST /api/chat`
 
-```http
-POST /api/chat
-```
-
-**Full URL**
-
-```text
-http://localhost:8080/api/chat
-```
-
-**Request Headers**
-
-```http
-Content-Type: application/json
-```
-
-**Request Body**
+**Request body:**
 
 ```json
 {
-  "message": "Explain Spring AI in two sentences."
+  "message": "Explain HashMap in Java"
 }
 ```
 
-**Successful Response — Example**
+### 2. Dynamic Interview Prompt
+
+**Endpoint:** `POST /api/chat/interview`
+
+**Request body:**
 
 ```json
 {
-  "reply": "Spring AI is a component within the Spring Framework that provides machine learning capabilities, allowing developers to integrate machine learning algorithms and models into their applications with minimal code and without the need to manage complex infrastructure."
+  "topic": "HashMap",
+  "difficulty": "Intermediate"
 }
 ```
 
+### 3. Conversation Memory
 
-**Expected Status:** `200 OK`
+**Endpoint:** `POST /api/chat/conversation`
+
+**Request body:**
+
+```json
+{
+  "conversationId": "java-chat-001",
+  "message": "My favorite programming language is Java. Remember this."
+}
+```
+
+To continue the same conversation, send another request using the same `conversationId`.
+
+**Example follow-up:**
+
+```json
+{
+  "conversationId": "java-chat-001",
+  "message": "What is my favorite programming language?"
+}
+```
 
 ### Test Using Postman
 
