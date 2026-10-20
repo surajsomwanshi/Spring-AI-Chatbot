@@ -2,6 +2,7 @@ package com.learnai.springaichatbot.controller;
 
 import com.learnai.springaichatbot.dto.ChatRequest;
 import com.learnai.springaichatbot.dto.ChatResponse;
+import com.learnai.springaichatbot.dto.ConversationChatRequest;
 import com.learnai.springaichatbot.dto.InterviewPromptRequest;
 import com.learnai.springaichatbot.service.ChatService;
 import jakarta.validation.Valid;
@@ -43,5 +44,16 @@ public class ChatController {
         );
 
         return new ChatResponse(answer);
+    }
+
+    @PostMapping("/conversation")
+    public ChatResponse chatWithMemory(
+            @Valid @RequestBody ConversationChatRequest request
+            ){
+        String reply = chatService.getConversationResponse(
+                request.conversationId(),
+                request.message()
+        );
+        return new ChatResponse(reply);
     }
 }

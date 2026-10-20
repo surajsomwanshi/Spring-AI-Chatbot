@@ -1,6 +1,8 @@
 package com.learnai.springaichatbot.service;
 
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
+import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.stereotype.Service;
 
@@ -10,9 +12,11 @@ import java.util.Map;
 public class ChatService {
 
     private final ChatClient chatClient;
+    private final ChatMemory chatMemory;
 
-    public ChatService(ChatClient chatClient) {
+    public ChatService(ChatClient chatClient, ChatMemory chatMemory) {
         this.chatClient = chatClient;
+        this.chatMemory = chatMemory;
     }
 
     public String getChatResponse(String message) {
@@ -59,6 +63,26 @@ public class ChatService {
                 .user(prompt)
                 .call()
                 .content();
+    }
+
+
+    public String getConversationResponse(String conversationId,
+                                          String message){
+        return chatClient.prompt() // start a new AI request
+                .user(message) //provides the user latest message
+                .advisors(a->a
+                        .advisors(
+                                MessageChatMemoryAdvisor  // retrieves the previous messages and save
+                                        .builder(chatMemory)
+                                        .build()
+                        )
+                        .param(
+                                ChatMemory.CONVERSATION_ID, // identify the conversation based on ID
+                                conversationId
+                        )
+                )
+                .call()
+                .content(); //send the request to ollama model and return response
     }
 
 }
